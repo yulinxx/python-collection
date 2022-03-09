@@ -1,9 +1,8 @@
-
+import os
+import wget
 import urllib.parse
 import urllib.request
 from bs4 import BeautifulSoup
-
-import wget
 
 
 def getURLInfo(webUrl):
@@ -36,10 +35,7 @@ def getSearchPage(webInfo):
     return 0
 
 def getPageLinks(webInfo):
-    mapLink = {}
     tables = webInfo.findAll('table', attrs={'bordercolordark': '#ffffff'})
-    # print(tables)
-    temp = tables[0]
     subTables = tables[0].findAll('div', attrs={'valign': 'middle'})
 
     mapDownInfo = {}
@@ -57,12 +53,9 @@ def getPageLinks(webInfo):
 
 def getDownLink(urlDown):
     webInfo = getURLInfo(urlDown)
-
     if webInfo is None:
         return None
-
     TxtDiv = webInfo.find('div', attrs={'class': 'TxtDiv'})
-
     scoreTxt = TxtDiv.find('font', attrs={'color': '#CC0000'})
     score = scoreTxt.text
     if score != '0':
@@ -81,14 +74,22 @@ def getDownLink(urlDown):
 
     a = TxtDiv.find('a')
     url = a.attrs['href']
-
     return strExt, url
 
-
 if __name__ == '__main__':
-    keyWord = urllib.parse.quote('卡通')
+    # 搜索关键字
+    strSearch = '魂牵梦萦魂牵梦萦 霍布斯'
+    keyWord = urllib.parse.quote(strSearch) # 转码
 
-    baseUrl = 'http://so.sccnn.com/search/' + keyWord + '/' + str(1) + '.html'
+    # 存储路径
+    savePath = 'F:/'
+    savePath += ('/' + strSearch)
+    isExists = os.path.exists(savePath)
+
+    if not isExists:
+        os.makedirs(savePath)
+
+    baseUrl = f'http://so.sccnn.com/search/{keyWord}/{str(1)}.html'
     webInfo = getURLInfo(baseUrl)
     pageCount = getSearchPage(webInfo)
 
@@ -97,7 +98,7 @@ if __name__ == '__main__':
     downCount = 0
     for pageNum in range(1, int(pageCount)):
         print(f'处理第 {pageNum} 页')
-        baseUrl = 'http://so.sccnn.com/search/' + keyWord + '/' + str(pageNum) + '.html'
+        baseUrl = f'http://so.sccnn.com/search/{keyWord}/{str(pageNum)}.html'
         webInfo = getURLInfo(baseUrl)
 
         if webInfo is not None:
@@ -111,7 +112,7 @@ if __name__ == '__main__':
 
                     dotIndex = urlDownload.rfind('.')
                     surf = urlDownload[dotIndex:]
-                    path = 'F:/' + name + surf  # 保存的路径
+                    path = f'F:/{name}{surf}'  # 保存的路径
 
                     print(f' {downCount} 即将下载: {urlDownload} \n\t 保存至: {path}')
 
@@ -119,4 +120,3 @@ if __name__ == '__main__':
                     downCount += 1
 
     print(f'下载完成,共下载{downCount}个')
-

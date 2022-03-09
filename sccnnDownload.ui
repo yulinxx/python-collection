@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>436</width>
+    <height>441</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>素材下载器</string>
+  </property>
+  <widget class="QLabel" name="labelKeyword">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>搜索关键字:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelSavePath">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>80</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存路径:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditKeyWord">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>40</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditSavePath">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>80</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushBtnBrowser">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>80</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>浏览...</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushBtnDown">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>130</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>开始下载</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushBtnCancle">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>130</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>取消下载</string>
+   </property>
+  </widget>
+  <widget class="QTextBrowser" name="textInfo">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>200</y>
+     <width>391</width>
+     <height>231</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>lineEditKeyWord</tabstop>
+  <tabstop>lineEditSavePath</tabstop>
+  <tabstop>pushBtnBrowser</tabstop>
+  <tabstop>pushBtnDown</tabstop>
+  <tabstop>pushBtnCancle</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
