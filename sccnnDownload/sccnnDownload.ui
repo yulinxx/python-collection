@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>405</width>
+    <height>175</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>素材下载器</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelSavePath">
+         <property name="text">
+          <string>保存路径:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEditSavePath"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="pushBtnBrowser">
+         <property name="text">
+          <string>浏览...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="labelSavePages">
+         <property name="text">
+          <string>下载个数:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelKeyword">
+         <property name="text">
+          <string>搜索关键字:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lineEditKeyWord"/>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="pushBtnDown">
+         <property name="text">
+          <string>开始下载</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>格式选择:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="cmbFormat">
+         <item>
+          <property name="text">
+           <string>所有</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PSD+AI</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PSD</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>AI</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>EPS</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="cmbDownCount">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>所有</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>20</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>50</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>100</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTextBrowser" name="textInfo"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>lineEditKeyWord</tabstop>
+  <tabstop>lineEditSavePath</tabstop>
+  <tabstop>pushBtnBrowser</tabstop>
+  <tabstop>cmbFormat</tabstop>
+  <tabstop>cmbDownCount</tabstop>
+  <tabstop>pushBtnDown</tabstop>
+  <tabstop>textInfo</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
