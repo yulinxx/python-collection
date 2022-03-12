@@ -18,6 +18,9 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEditSavePath"/>
+       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="labelSavePath">
          <property name="text">
@@ -25,20 +28,10 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEditSavePath"/>
-       </item>
        <item row="1" column="2">
         <widget class="QPushButton" name="pushBtnBrowser">
          <property name="text">
           <string>浏览...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="labelSavePages">
-         <property name="text">
-          <string>下载个数:</string>
          </property>
         </widget>
        </item>
@@ -50,9 +43,13 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEditKeyWord"/>
+        <widget class="QLineEdit" name="lineEditKeyWord">
+         <property name="maxLength">
+          <number>12</number>
+         </property>
+        </widget>
        </item>
-       <item row="3" column="2">
+       <item row="4" column="2">
         <widget class="QPushButton" name="pushBtnDown">
          <property name="text">
           <string>开始下载</string>
@@ -60,6 +57,13 @@
         </widget>
        </item>
        <item row="2" column="0">
+        <widget class="QLabel" name="labelSavePages">
+         <property name="text">
+          <string>下载个数:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
           <string>格式选择:</string>
@@ -67,6 +71,59 @@
         </widget>
        </item>
        <item row="2" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,1,3">
+         <item>
+          <widget class="QComboBox" name="cmbDownCount">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+           <item>
+            <property name="text">
+             <string>所有</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>20</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>50</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>100</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelStartPage">
+           <property name="text">
+            <string>起始页:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditStartPage">
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="maxLength">
+            <number>4</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="1">
         <widget class="QComboBox" name="cmbFormat">
          <item>
           <property name="text">
@@ -95,36 +152,21 @@
          </item>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QComboBox" name="cmbDownCount">
-         <property name="editable">
-          <bool>true</bool>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pushBtnTestPages">
+         <property name="text">
+          <string>测试页数</string>
          </property>
-         <item>
-          <property name="text">
-           <string>所有</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>10</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>20</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>50</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>100</string>
-          </property>
-         </item>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QProgressBar" name="progressBar">
+         <property name="maximum">
+          <number>10000</number>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
         </widget>
        </item>
       </layout>
@@ -140,8 +182,10 @@
   <tabstop>lineEditKeyWord</tabstop>
   <tabstop>lineEditSavePath</tabstop>
   <tabstop>pushBtnBrowser</tabstop>
-  <tabstop>cmbFormat</tabstop>
   <tabstop>cmbDownCount</tabstop>
+  <tabstop>lineEditStartPage</tabstop>
+  <tabstop>pushBtnTestPages</tabstop>
+  <tabstop>cmbFormat</tabstop>
   <tabstop>pushBtnDown</tabstop>
   <tabstop>textInfo</tabstop>
  </tabstops>

@@ -8,35 +8,39 @@ from PyQt6.QtCore import QThread, pyqtSignal
 
 class DownThread(QThread):
     tipSignal = pyqtSignal(str)
+    tipDownProcess = pyqtSignal(int)
     endSignal = pyqtSignal()
 
     def __init__(self):
         super(DownThread, self).__init__()
         self.__strSearchWord = '节日'
-        self.__strSavePath = os.getcwd()
+        self.__strSavePath = os.getcwd() + self.__strSearchWord
 
         self.__pageCount = 1
         self.__formatIndex = 0    # 0/所有格式 1/PSD+AI 2/PSD 3/AI 4/EPS
         self.__downCount = 99999  # 下载个数
+        self.__startPage = 1    # 起始下载页
         self.__stop = False  # 停止
 
     def getPages(self):
-        baseUrl = f'http://so.sccnn.com/search/{self.__strSearchWord}/{str(1)}.html'
+        baseUrl = f'http://so.sccnn.com/search/{urllib.request.quote(self.__strSearchWord)}/{str(1)}.html'
         webInfo = self.getURLInfo(baseUrl)
         pageCount = self.getSearchPage(webInfo)
 
-        strTip = f'搜索到 {pageCount} 页'
+        strTip = f'搜索 {self.__strSearchWord},得到 {pageCount} 页,约 {pageCount * 12} 个文件'
         self.tipSignal.emit(strTip)
         self.__pageCount = int(pageCount)
         return self.__pageCount
 
     def setDownKeyword(self, keyWord):
         """搜索关键字"""
-        self.__strSearchWord = urllib.request.quote(keyWord)
+        self.__strSearchWord = keyWord
 
     def setSavePath(self, savePath):
         """保存路径"""
-        self.__strSavePath = savePath + '/'
+        self.__strSavePath = savePath + '/' + self.__strSearchWord + '/'
+        self.__strSavePath.replace('//', '/')
+        self.__strSavePath.replace('\\', '/')
 
     def setDownFormat(self, formatIndex):
         """下载格式"""
@@ -45,6 +49,10 @@ class DownThread(QThread):
     def setDownCount(self, downCount):
         """下载数量"""
         self.__downCount = downCount
+
+    def setStartPage(self, startPage):
+        """下载起始页"""
+        self.__startPage = startPage
 
     def run(self):
         """线程入口函数"""
@@ -65,6 +73,10 @@ class DownThread(QThread):
 
     def __process(self):
         """线程运行程序"""
+        if self.__startPage > self.__pageCount:
+            self.tipSignal.emit('起始页超出总页数')
+            return
+
         isExists = os.path.exists(self.__strSavePath)  # 创建目录
         if not isExists:
             os.makedirs(self.__strSavePath)
@@ -73,16 +85,17 @@ class DownThread(QThread):
         if not isExists:
             return
 
-        baseUrl = f'http://so.sccnn.com/search/{self.__strSearchWord}/{str(1)}.html'
+        baseUrl = f'http://so.sccnn.com/search/{urllib.request.quote(self.__strSearchWord)}/{str(1)}.html'
         webInfo = self.getURLInfo(baseUrl)
 
         downCount = 0
-        for pageNum in range(1, self.__pageCount):
+
+        for pageNum in range(self.__startPage, self.__pageCount):
             strTip = f'处理第 {pageNum} 页'
             # print(strTip)
             self.tipSignal.emit(strTip)
 
-            baseUrl = f'http://so.sccnn.com/search/{self.__strSearchWord}/{str(pageNum)}.html'
+            baseUrl = f'http://so.sccnn.com/search/{urllib.request.quote(self.__strSearchWord)}/{str(pageNum)}.html'
             webInfo = self.getURLInfo(baseUrl)
 
             if self.__stop:
@@ -102,8 +115,8 @@ class DownThread(QThread):
                         surf = urlDownload[dotIndex:]
 
                         print(urlDownload)
-                        path = self.__strSavePath + name + surf  # 保存的路径
-                        strTip = f' {downCount} --即将下载: {urlDownload} \n 保存至: {path}'
+                        pathSave = self.__strSavePath + name + surf  # 保存的路径
+                        strTip = f' {downCount} --即将下载: {urlDownload} \n 保存至: {pathSave}'
                         print(strTip)
                         self.tipSignal.emit(strTip)
                         # wget.download(urlDownload, path)  # 下载
@@ -111,7 +124,9 @@ class DownThread(QThread):
                         # strTest = f'F:/{str(downCount)}.rar'
                         # print(strTest)
                         try:
-                            wget.download(urlDownload, out=path)  # 下载
+                            # wget.download(urlDownload, out=path)  # 下载
+
+                            urllib.request.urlretrieve(urlDownload, pathSave, self.__downloadTip)
                         except Exception as e:
                             print(e)
                             # self.tipSignal.emit(e)
@@ -123,6 +138,21 @@ class DownThread(QThread):
         strTip = f'下载完成,共下载{downCount}个'
         print(strTip)
         self.tipSignal.emit(strTip)
+
+    def __downloadTip(self, blocknum, blocksize, totalsize):
+        """
+        :param blocknum: 已下载数据块
+        :param blocksize: 数据块大小
+        :param totalsize: 远程文件大小
+        :return:
+        """
+        percent = 100.0 * blocknum * blocksize / totalsize
+        if percent > 100:
+            percent = 100
+        # print('%.2f%%' % percent)
+        print(percent)
+        # self.tipSignal.emit('%.2f%%' % percent)
+        self.tipDownProcess.emit(percent * 100)
 
     def getURLInfo(self, webUrl):
         """获取网页源代码"""
@@ -148,6 +178,9 @@ class DownThread(QThread):
 
     def getSearchPage(self, webInfo):
         """获取搜索的结果有多少页"""
+        if webInfo is None:
+            return 0
+
         mapLink = {}
         tables = webInfo.findAll('td', attrs={'align': 'Center'})
         # print(tables)
@@ -156,7 +189,7 @@ class DownThread(QThread):
             if len(txt) >= 10:
                 startIndex = txt.rfind('为')
                 endIndex = txt.find('页')
-                pageCount = txt[int(startIndex + 1): int(endIndex)]
+                pageCount = int(txt[int(startIndex + 1): int(endIndex)])
                 return pageCount
 
         return 0

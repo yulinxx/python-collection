@@ -14,8 +14,10 @@ class MainWindow(QDialog, Ui_Dialog):
         self.__downThread = None
 
         self.setupUi(self)
-        self.pushBtnDown.clicked.connect(self.slotDown)
+
         self.pushBtnBrowser.clicked.connect(self.slotBrowserFolder)
+        self.pushBtnTestPages.clicked.connect(self.slotTestPages)
+        self.pushBtnDown.clicked.connect(self.slotDown)
         self.lineEditSavePath.setText(os.getcwd())
 
     def __del__(self):
@@ -24,41 +26,60 @@ class MainWindow(QDialog, Ui_Dialog):
             # self.__downThread.
 
     def slotBrowserFolder(self):
+        """浏览存储路径"""
         folderName = QFileDialog.getExistingDirectory(self, "选取要保存的位置", os.getcwd())
         self.lineEditSavePath.setText(folderName)
+
+    def slotTestPages(self):
+        """获取页数"""
+        self.initThread()
+        pages = self.__downThread.getPages()
+        # self.textInfo.append(f'搜索 {self.lineEditKeyWord.text()}, 得到 {pages} 页, 大约共 {pages * 12} 个文件')
 
     def stopDownload(self):
         # 若在运行则关闭下载线程
         if self.__downThread and self.__downThread.isRunning():
+            self.progressBar.setValue(0)
+            self.progressBar.setVisible(False)
             self.__downThread.stop()
             self.pushBtnDown.setText("开始下载")
             return True
         return False
 
-    def startDownload(self):
-        self.textInfo.setText('')
+    def initThread(self):
+        if self.__downThread is None:
+            self.__downThread = DownThread()
+
+            self.__downThread.tipSignal.connect(self.slotProcessTip)
+            self.__downThread.tipDownProcess.connect(self.slotDownProcess)
+            self.__downThread.endSignal.connect(self.slotProcessEnd)
+
         self.__strSearchWord = self.lineEditKeyWord.text()
         self.__strSavePath = self.lineEditSavePath.text()
 
-        if len(self.__strSearchWord) < 1 and len(self.__strSavePath < 1):
+        self.__downThread.setDownKeyword(self.__strSearchWord)
+        self.__downThread.setSavePath(self.__strSavePath)
+        self.__downThread.setDownFormat(self.cmbFormat.currentIndex())
+
+    def startDownload(self):
+        self.textInfo.setText('')
+        self.progressBar.setVisible(True)
+        self.progressBar.setValue(0)
+
+        self.initThread()
+
+        if len(self.__strSearchWord) < 1 and len(self.__strSavePath) < 1:
             self.textInfo.append('请输入')
             return
 
         # 开僻一个新线程
         if self.__downThread and self.__downThread.isRunning():
-            self.processTip("正在运行中")
+            self.slotProcessTip("正在运行中")
             return
 
-        # self.__thread = processExif(path, self.processTip, self.processEnd)
-        if self.__downThread is None:
-            self.__downThread = DownThread()
+        # self.__thread = processExif(path, self.slotProcessTip, self.slotProcessEnd)
 
-            self.__downThread.tipSignal.connect(self.processTip)
-            self.__downThread.endSignal.connect(self.processEnd)
 
-        self.__downThread.setDownKeyword(self.__strSearchWord)
-        self.__downThread.setSavePath(self.__strSavePath)
-        self.__downThread.setDownFormat(self.cmbFormat.currentIndex())
         try:
             self.__downThread.setDownCount(int(self.cmbDownCount.currentText()))
         except:
@@ -82,8 +103,11 @@ class MainWindow(QDialog, Ui_Dialog):
 
         self.startDownload()
 
-    def processTip(self, info):
+    def slotProcessTip(self, info):
         self.textInfo.append(info)
+
+    def slotDownProcess(self, percent):
+        self.progressBar.setValue(percent)
 
     def setUIEnable(self, enable):
         self.lineEditKeyWord.setEnabled(enable)
@@ -93,5 +117,5 @@ class MainWindow(QDialog, Ui_Dialog):
         self.cmbFormat.setEnabled(enable)
         self.cmbDownCount.setEnabled(enable)
 
-    def processEnd(self):
+    def slotProcessEnd(self):
         self.setUIEnable(True)
