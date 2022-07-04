@@ -1,3 +1,7 @@
+
+
+
+
 # https://zhuanlan.zhihu.com/p/36980767
 
 # coding by 刘云飞
@@ -14,48 +18,48 @@ img = cv2.imread(filePath, 1)
 img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
 
 # 得到图片的高和宽
-img_height, img_width = img.shape[:2]
+imgH, imgW = img.shape[:2]
 
 # 定义对应的点
-points1 = np.float32([
+posOri = np.float32([
     [0, 0],
     [1024, 0],
     [1024, 700]
 ])
-# points2 = np.float32([
+# posRes = np.float32([
 #     [219, 0],
 #     [1192, 323],
 #     [975, 987]
 # ])
 
 # 切变
-points2 = np.float32([
+posRes = np.float32([
     [0, 0],
     [1024, 0],
     [1024 + 100, 700]
 ])
 
 # X翻转
-points2 = np.float32([
+posRes = np.float32([
     [0, 700],
     [1024, 700],
     [1024, 0]
 ])
 # Y翻转
-points2 = np.float32([
+posRes = np.float32([
     [1024, 0],
     [0, 0],
     [0, 700]
 ])
 
 # Y翻转
-points2 = np.float32([
+posRes = np.float32([
     [1024, 0],
     [0, 0],
     [-443, 303]
 ])
 
-points2 = np.float32([
+posRes = np.float32([
     [1345, 497],
     [0, 0],
     [54, 560]
@@ -70,20 +74,20 @@ cv2.circle(img, [1024, 0], 15, (0, 255, 0), 4)
 cv2.circle(img, [1024, 700], 15, (255, 0, 0), 4)
 
 # 变换矩阵M
-M = cv2.getAffineTransform(points1, points2)
+M = cv2.getAffineTransform(posOri, posRes)
 
 # 变换后的图像
-# processed = cv2.warpAffine(img, M, (img_width * 2, img_height * 2), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
+# imgRes = cv2.warpAffine(img, M, (imgW * 2, imgH * 2), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
 #                            borderValue=(255, 255, 255, 0))
 
-processed = cv2.warpAffine(img, M, (img_width * 2, img_height * 2), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_TRANSPARENT,
+imgRes = cv2.warpAffine(img, M, (imgW * 2, imgH * 2), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_TRANSPARENT,
                            borderValue=(0, 255, 255, 0.5))
 
-cv2.rectangle(processed, [0, 0], [1024, 700], (255, 0, 255), 2, 8)
+cv2.rectangle(imgRes, [0, 0], [1024, 700], (255, 0, 255), 2, 8)
 
-cv2.imwrite("D:/xx.png", processed)
+cv2.imwrite("D:/xx.png", imgRes)
 # 显示原图和处理后的图像
 # cv2.imshow("org", img_org)
-cv2.imshow("processed", processed)
+cv2.imshow("imgRes", imgRes)
 
 cv2.waitKey(0)
