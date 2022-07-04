@@ -34,7 +34,7 @@ class HandleFile:
 
                 originFile = os.path.join(root, strName)
                 fInfo = os.path.splitext(originFile)
-                if fInfo[-1] in typeList:
+                if fInfo[-1].lower() in typeList:
                     newFileName = mkDir + '/' + strName + self.addSuffix
                     # 新路径 + 源文件名称 + 新增后缀
                     with open(originFile, 'r', encoding='utf-8') as f:
@@ -80,16 +80,16 @@ if __name__ == '__main__':
     print('-------------------------')
     print('----------Begin----------')
 
-    originDir = r'E:/testProj/QtOpenCVTest'  # 源路径
-    newDir = r'E:/mmmm/'  # 新路径
+    originDir = r'E:/RD/GraphicsComponent_QtExamplexx20220701'  # 源路径
+    newDir = r'E:/RD/GraphicsComponent_QtExamplexx20220701'  # 新路径
     addSuffix = r'_mm'  # 添加后缀
     typeList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py']  # 文件类型
 
     Handle = HandleFile(originDir, typeList, newDir, addSuffix)
     print('......Step 1:')
-    Handle.copyFiles()
+    # Handle.copyFiles()
 
-    # print('......Step 2:')
-    # Handle.rnameSuffix()
+    print('......Step 2:')
+    Handle.rnameSuffix()
 
     print('......The End......')
