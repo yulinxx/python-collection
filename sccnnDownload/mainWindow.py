@@ -18,7 +18,9 @@ class MainWindow(QDialog, Ui_Dialog):
         self.pushBtnBrowser.clicked.connect(self.slotBrowserFolder)
         self.pushBtnTestPages.clicked.connect(self.slotTestPages)
         self.pushBtnDown.clicked.connect(self.slotDown)
+
         self.lineEditSavePath.setText(os.getcwd())
+        self.cmbFormat.setCurrentIndex(1)
 
     def __del__(self):
         if self.__downThread:
