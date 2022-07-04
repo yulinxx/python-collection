@@ -17,9 +17,10 @@ class DownThread(QThread):
         self.__strSavePath = os.getcwd() + self.__strSearchWord
 
         self.__pageCount = 1
-        self.__formatIndex = 0    # 0/所有格式 1/PSD+AI 2/PSD 3/AI 4/EPS
+        self.__formatIndex = 0  # 0/所有格式 1/PSD+AI 2/PSD 3/AI 4/EPS
         self.__downCount = 99999  # 下载个数
-        self.__startPage = 1    # 起始下载页
+        self.__startPage = 1  # 起始下载页
+        self.__prevPercent = 0.0  # 上次下载进度
         self.__stop = False  # 停止
 
     def getPages(self):
@@ -88,7 +89,7 @@ class DownThread(QThread):
         baseUrl = f'http://so.sccnn.com/search/{urllib.request.quote(self.__strSearchWord)}/{str(1)}.html'
         webInfo = self.getURLInfo(baseUrl)
 
-        downCount = 0
+        downCount = 1
 
         for pageNum in range(self.__startPage, self.__pageCount):
             strTip = f'处理第 {pageNum} 页'
@@ -114,10 +115,10 @@ class DownThread(QThread):
                         dotIndex = urlDownload.rfind('.')
                         surf = urlDownload[dotIndex:]
 
-                        print(urlDownload)
+                        # print(urlDownload)
                         pathSave = self.__strSavePath + name + surf  # 保存的路径
                         strTip = f' {downCount} --即将下载: {urlDownload} \n 保存至: {pathSave}'
-                        print(strTip)
+                        # print(strTip)
                         self.tipSignal.emit(strTip)
                         # wget.download(urlDownload, path)  # 下载
 
@@ -136,7 +137,7 @@ class DownThread(QThread):
                             return
 
         strTip = f'下载完成,共下载{downCount}个'
-        print(strTip)
+        # print(strTip)
         self.tipSignal.emit(strTip)
 
     def __downloadTip(self, blocknum, blocksize, totalsize):
@@ -149,10 +150,14 @@ class DownThread(QThread):
         percent = 100.0 * blocknum * blocksize / totalsize
         if percent > 100:
             percent = 100
+
+        if percent - self.__prevPercent > 1:
+            self.__prevPercent = percent
+            self.tipDownProcess.emit(percent * 100)
+
         # print('%.2f%%' % percent)
-        print(percent)
+        # print(percent)
         # self.tipSignal.emit('%.2f%%' % percent)
-        self.tipDownProcess.emit(percent * 100)
 
     def getURLInfo(self, webUrl):
         """获取网页源代码"""
@@ -228,18 +233,18 @@ class DownThread(QThread):
         # self.__formatIndex = 0    # 0/所有格式 1/PSD+AI 2/PSD 3/AI 4/EPS
 
         haveFind = False
-        if self.__formatIndex == 0:     # # 0/所有格式
+        if self.__formatIndex == 0:  # # 0/所有格式
             haveFind = True
-        elif self.__formatIndex == 1:   # 1/PSD+AI
+        elif self.__formatIndex == 1:  # 1/PSD+AI
             if describe.find('PSD') > -1 or describe.find('AI') > -1:
                 haveFind = True
-        elif self.__formatIndex == 2:   # 2/PSD
+        elif self.__formatIndex == 2:  # 2/PSD
             if describe.find('PSD') > -1 or describe.find('AI') > -1:
                 haveFind = True
-        elif self.__formatIndex == 3:   # 3/AI
+        elif self.__formatIndex == 3:  # 3/AI
             if describe.find('AI') > -1:
                 haveFind = True
-        elif self.__formatIndex == 4:   # 4/EPS
+        elif self.__formatIndex == 4:  # 4/EPS
             if describe.find('EPS') > -1:
                 haveFind = True
         if haveFind is False:
