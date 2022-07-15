@@ -83,7 +83,7 @@ if __name__ == '__main__':
     originDir = r'E:/RD/GraphicsComponent_QtExamplexx20220701'  # 源路径
     newDir = r'E:/RD/GraphicsComponent_QtExamplexx2022-07-15'  # 新路径
     addSuffix = r'_mm'  # 添加后缀
-    typeList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.qrc']  # 文件类型
+    typeList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.qrc', '.c', '.cxx']  # 文件类型
 
     Handle = HandleFile(originDir, typeList, newDir, addSuffix)
     print('......Step 1:')
