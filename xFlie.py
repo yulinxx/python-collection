@@ -2,10 +2,11 @@ import os
 from shutil import copyfile
 
 class HandleFile:
-    def __init__(self, originDir, typeList, newDir, addSuffix):
+    def __init__(self, originDir, typeList, newDir, ignoreDir, addSuffix):
         self.originDir = originDir
         self.typeList = typeList
         self.newDir = newDir
+        self.ignoreDir = ignoreDir
         self.addSuffix = addSuffix
 
     def copyFiles(self):
@@ -23,6 +24,12 @@ class HandleFile:
         countIndex = 0
 
         for root, dirname, filename in os.walk(originDir):
+            for curDir in dirname:
+                if curDir in self.ignoreDir:
+                    continue
+                else:
+                    break
+
             mkDir = self.newDir + root[pathLen:]
 
             # 若目录不存在,则创建新的目录进行文件存储
@@ -82,10 +89,11 @@ if __name__ == '__main__':
 
     originDir = r'E:/RD/GraphicsComponent_QtExamplexx20220701'  # 源路径
     newDir = r'C:/Users/xx/Desktop/rdImgProcessxxx'  # 新路径
+    ignoreDir = ['.vs', '.vscode', '.ide', 'build']
     addSuffix = r'_xx'  # 添加后缀
     typeList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.qrc', '.c', '.cxx', '.ui']  # 文件类型
 
-    Handle = HandleFile(originDir, typeList, newDir, addSuffix)
+    Handle = HandleFile(originDir, typeList, newDir, ignoreDir, addSuffix)
     print('......Step 1:')
     # Handle.copyFiles()
 
