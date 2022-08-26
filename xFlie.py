@@ -88,10 +88,10 @@ if __name__ == '__main__':
     print('----------Begin----------')
 
     originDir = r'E:/RD/GraphicsComponent_QtExamplexx20220701'  # 源路径
-    newDir = r'C:/Users/xx/Desktop/rdImgProcessxxx'  # 新路径
+    newDir = r'E:/GraphicsComponent_QtExamplexxx'  # 新路径
     ignoreDir = ['.vs', '.vscode', '.ide', 'build']
     addSuffix = r'_xx'  # 添加后缀
-    typeList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.qrc', '.c', '.cxx', '.ui']  # 文件类型
+    typeList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.qrc', '.c', '.cxx', '.ui', '.cmake']  # 文件类型
 
     Handle = HandleFile(originDir, typeList, newDir, ignoreDir, addSuffix)
     print('......Step 1:')
