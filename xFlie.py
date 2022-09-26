@@ -13,10 +13,8 @@ class HandleFile:
         """
             这个是函数的帮助说明文档，help时会显示\n
             将文件夹中的文件复制至新文件中,并添加后缀名,只处理列表中的文件类型\n
-
             param1 - 要处理的文件夹  param2 -  要处理的文件类型\n
             param3 - 存储的文件夹    param4 - 新文件要添加的后缀名\n
-
             Returns:  共处理的文件数量\n
         """
         # 在这里,将老目录去掉
@@ -46,7 +44,12 @@ class HandleFile:
                     # 新路径 + 源文件名称 + 新增后缀
                     with open(originFile, 'r', encoding='utf-8') as f:
                         with open(newFileName, 'w', encoding='utf-8') as newFile:
-                            newFile.write(f.read())
+                            try:
+                                newFile.write(f.read())
+                            except:
+                                print(f"------- fill write error: {newFileName}")
+                            finally:
+                                print(f"{newFileName} ---> {countIndex}")
                 else:  # 若不存在列表中(未加密的文件),则直接进行复制
                     newFileName = mkDir + '/' + strName
                     copyfile(originFile, newFileName)
@@ -88,11 +91,11 @@ if __name__ == '__main__':
     print('----------Begin----------')
 
     originDir = r'E:/RD/GraphicsComponent_QtExamplexx20220701'  # 源路径
-    newDir = r'E:/RD/GraphicsComponent_QtExamplexxx_2022.09.22'  # 新路径
+    newDir = r'D:/xx/Downloads/LANDrop/GraphicsComponent_QtExamplexxx'  # 新路径
     ignoreDir = ['.vs', '.vscode', '.ide', 'build']
     addSuffix = r'_xx'  # 添加后缀
-    typeList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.qrc',
-                '.c', '.cxx', '.ui', '.cmake', '.rc', '.idx']  # 文件类型
+    typeList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.c', '.cxx',
+                '.cmake', '.idx', '.rc', '.ui', '.qrc', '.pro', '.pri']  # 文件类型
 
     Handle = HandleFile(originDir, typeList, newDir, ignoreDir, addSuffix)
     print('......Step 1:')
