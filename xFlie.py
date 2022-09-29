@@ -41,7 +41,8 @@ class HandleFile:
                 originFile = os.path.join(rootDir, strFileName)
                 fInfo = os.path.splitext(originFile)
 
-                if fInfo[-1].lower() in self.__binList:  # 二进制文件的读写复制
+                fileSuffix = fInfo[-1].lower()
+                if fileSuffix in self.__binList:  # 二进制文件的读写复制
                     try:
                         binOpen = open(originFile, 'rb')
                         binCont = binOpen.read()
@@ -52,11 +53,11 @@ class HandleFile:
                         e = newFile.write(binCont)
                         newFile.close()
                     except:
-                        print(f"---- Error {originFile} to {newFileName}")
+                        print(f"\nxxxError {fileSuffix} -> {originFile} to {newFileName}\n")
                     finally:
-                        print(f"{originFile} ---> {newFileName}")
+                        print(f"{fileSuffix} -- {originFile} ---> {newFileName}")
 
-                elif fInfo[-1].lower() in self.__txtList:  # 符合的后缀文件进行后缀改写复制
+                elif fileSuffix in self.__txtList:  # 符合的后缀文件进行后缀改写复制
                     newFileName = mkDir + '/' + strFileName + self.__addSuffix
                     # 新路径 + 源文件名称 + 新增后缀
                     with open(originFile, 'r', encoding='utf-8') as f:
@@ -64,13 +65,13 @@ class HandleFile:
                             try:
                                 newFile.write(f.read())
                             except:
-                                print(f"------- fill write error: {newFileName}")
+                                print(f"\nxxxError {newFileName} -> {originFile}\n")
                             finally:
-                                print(f"{newFileName} ---> {countIndex}")
+                                print(f"{fileSuffix} -- {newFileName} ---> {countIndex}")
                 else:  # 若不存在列表中(未加密的文件),则直接进行复制
                     newFileName = mkDir + '/' + strFileName
                     copyfile(originFile, newFileName)
-                    print(f"{newFileName} ---> {countIndex}")
+                    print(f"{fileSuffix} -- {newFileName} ---> {countIndex}")
 
         print('copyFile Process: ' + str(countIndex) + ' files')
 
@@ -108,10 +109,11 @@ if __name__ == '__main__':
     print('-------------------------')
     print('----------Begin----------')
 
-    optCopy = True
-    originDir = r'E:/pyProj/python-collection/.git'  # 源路径
+    # optCopy = True
+    optCopy = False
+    originDir = r'C:\Users\april\Documents\cad\GraphicsComponent_QtExample'  # 源路径
 
-    newDir = r'E:/pyProj/python-collection/gitxxx'  # 新路径 或 要还原的路径
+    newDir = r'E:\RD\GraphicsComponent_QtExample_git'  # 新路径 或 要还原的路径
 
     ignoreDir = ['.vs', '.vscode', '.ide', 'build']
     addSuffix = r'_xx'  # 添加后缀
