@@ -18,24 +18,27 @@ class HandleFile:
             param3 - 存储的文件夹    param4 - 新文件要添加的后缀名\n
             Returns:  共处理的文件数量\n
         """
-        # 在这里,将老目录去掉
+        # 在这里,将老目录去掉strFind = {str} '\\'
         pathLen = len(self.__originDir)
         countIndex = 0
 
+        # 当前文件夹的路径 子目录列表  当前路径下的所有文件
         for rootDir, dirName, fileNames in os.walk(originDir):
 
-            for curDir in dirName:
-                if curDir in self.__ignoreDir:  # 忽略的文件夹不复制
-                    continue
-                else:
-                    break
+            # todo: 忽略的文件夹仍然被复制....
+
+            strFind = '\\'
+            nPos = rootDir.rfind(strFind)
+            curDir = rootDir[nPos + len(strFind):]
+            if curDir in self.__ignoreDir:  # 忽略的文件夹不复制
+                continue
 
             # 若目录不存在,则创建新的目录进行文件存储
-            mkDir = self.__newDir + rootDir[pathLen:]
+            mkDir = self.__newDir + '/' + rootDir[pathLen:]
             if not os.path.exists(mkDir):
                 os.mkdir(mkDir)
 
-            for strFileName in fileNames:
+            for strFileName in fileNames:  # 遍历当前文件夹下所有的文件
                 countIndex += 1
 
                 originFile = os.path.join(rootDir, strFileName)
@@ -109,13 +112,14 @@ if __name__ == '__main__':
     print('-------------------------')
     print('----------Begin----------')
 
-    # optCopy = True
-    optCopy = False
-    originDir = r'C:\Users\april\Documents\cad\GraphicsComponent_QtExample'  # 源路径
+    optCopy = True
+    # optCopy = False
+    originDir = r'E:\RD\GraphicsComponent_QtExamplex2022.09.28'  # 源路径
 
-    newDir = r'E:\RD\GraphicsComponent_QtExample_git'  # 新路径 或 要还原的路径
+    newDir = r'E:\GraphicsComponent_QtExample_1001'  # 新路径 或 要还原的路径
 
-    ignoreDir = ['.vs', '.vscode', '.ide', 'build']
+    # ignoreDir = ['.vs', '.vscode', '.ide', 'build']
+    ignoreDir = ['Algorithm_w', 'build', '.ide', 'build']
     addSuffix = r'_xx'  # 添加后缀
     txtFileList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.c', '.cxx',
                    '.cmake', '.rc', '.ui', '.qrc', '.pro', '.pri']  # 文件类型
