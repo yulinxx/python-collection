@@ -112,17 +112,17 @@ if __name__ == '__main__':
     print('-------------------------')
     print('----------Begin----------')
 
-    optCopy = True
-    # optCopy = False
-    originDir = r'E:\RD\GraphicsComponent_QtExamplex2022.09.28'  # 源路径
+    # optCopy = True
+    optCopy = False
+    originDir = r'E:\Project\Github\DirectX11-With-Windows-SDK\DX\Project 01-09'  # 源路径
 
-    newDir = r'E:\GraphicsComponent_QtExample_1001'  # 新路径 或 要还原的路径
+    newDir = r'E:\RD\GraphicsComponent_QtExample_1111'  # 新路径 或 要还原的路径
 
     # ignoreDir = ['.vs', '.vscode', '.ide', 'build']
     ignoreDir = ['Algorithm_w', 'build', '.ide', 'build']
     addSuffix = r'_xx'  # 添加后缀
     txtFileList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.c', '.cxx',
-                   '.cmake', '.rc', '.ui', '.qrc', '.pro', '.pri']  # 文件类型
+                   '.cmake', '.rc', '.ui', '.qrc', '.pro', '.pri', '.sln']  # 文件类型
 
     binList = ['.idx']
 
