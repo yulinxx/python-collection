@@ -35,7 +35,7 @@ class jobCalender:
 
         self.__initStartDate(year, month, day)
 
-    def Start(self):
+    def GenData(self):
         """开始排班"""
         if self.__bInit:
             return self.__genMonthData()

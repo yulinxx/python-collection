@@ -13,13 +13,12 @@ class jobManager:
         for user in userList:
             self._userDataDict[user] = []
 
-    def SetData(self, userList, monthData):
+    def SetUser(self, userList):
         self.__userList = userList
-        self.__monthData = monthData
-
         self._userDataDict = {user: [] for user in userList}
-
-
+    def SetMonthData(self, monthData):
+        self.__monthData = monthData
+        self._userDataDict = {user: [] for user in self.__userList}
 
     # def __str__(self):
     def ShowData(self):
@@ -36,7 +35,7 @@ class jobManager:
         """查询分配的人员索引"""
         return self._curPersonIndex
 
-    def Set(self, indexPerson: int = 0):
+    def Do(self, indexPerson: int = 0):
         """设置排班日期"""
 
         curDayIndex = 0  # 当前分配的日期索引
@@ -74,13 +73,17 @@ class jobManager:
                     if indexPerson > len(self.__userList) - 1:
                         indexPerson = 0
 
-                    self._curPersonDays = 0
+                    self._curPersonDays = 0   # 还需要分配的天数
 
                 else:   # 剩余所有的月份分配给指定人员
                     self._userDataDict[user].extend(self.__monthData[curDayIndex:])
 
                     self._curPersonDays = len(self.__monthData[curDayIndex:])  # 当前只分配了N天
                     self._curPersonIndex = indexPerson  # 保存当前分配的人员索引
+
+                    # m = 3
+                    # x = 9-9
+                    # n = m / x
 
                     loopUser = False
                     break
