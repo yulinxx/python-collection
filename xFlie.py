@@ -19,22 +19,25 @@ class HandleFile:
             Returns:  共处理的文件数量\n
         """
         # 在这里,将老目录去掉strFind = {str} '\\'
-        pathLen = len(self.__originDir)
         countIndex = 0
-
+        parentPath = '@'
         # 当前文件夹的路径 子目录列表  当前路径下的所有文件
         for rootDir, dirName, fileNames in os.walk(originDir):
-
-            # todo: 忽略的文件夹仍然被复制....
-
             strFind = '\\'
             nPos = rootDir.rfind(strFind)
-            curDir = rootDir[nPos + len(strFind):]
+            curDir = rootDir[nPos + len(strFind):]  # 当前文件夹路径中的最后的文件夹名称
             if curDir in self.__ignoreDir:  # 忽略的文件夹不复制
+                parentPath = rootDir    # 保存当前路径,防止子目录继续遍历
                 continue
 
+            subPos = rootDir.find(parentPath)
+            if subPos >= 0:
+                continue
+
+            parentPath = '@'
+
             # 若目录不存在,则创建新的目录进行文件存储
-            mkDir = self.__newDir + '/' + rootDir[pathLen:]
+            mkDir = rootDir.replace(self.__originDir, self.__newDir)
             if not os.path.exists(mkDir):
                 os.mkdir(mkDir)
 
@@ -104,35 +107,39 @@ class HandleFile:
                         os.remove(fileName)
 
                 countIndex += 1
-
-        print('rnameSuffix Process: ' + str(countIndex) + ' files')
+                print('rnameSuffix Process: ' + str(countIndex) + ' files')
 
 
 if __name__ == '__main__':
     print('-------------------------')
     print('----------Begin----------')
 
-    # optCopy = True
-    optCopy = False
-    originDir = r'E:\Project\Github\DirectX11-With-Windows-SDK\DX\Project 01-09'  # 源路径
+    optCopy = True
+    # optCopy = False
+    originDir = r'E:\RD\xxxx'  # 源路径
 
-    newDir = r'E:\RD\GraphicsComponent_QtExample_1111'  # 新路径 或 要还原的路径
+    newDir = r'E:\RD\xxxx1'  # 新路径 或 要还原的路径
 
-    # ignoreDir = ['.vs', '.vscode', '.ide', 'build']
-    ignoreDir = ['Algorithm_w', 'build', '.ide', 'build']
+    ignoreDir = ['.vs', '.vscode', '.ide', 'build', 'CMake-build']
+    binList = ['.idx']  # 以二进制复制的文件后缀
+
     addSuffix = r'_xx'  # 添加后缀
     txtFileList = ['.h', '.cpp', '.txt', '.hpp', '.inl', '.py', '.c', '.cxx',
                    '.cmake', '.rc', '.ui', '.qrc', '.pro', '.pri', '.sln']  # 文件类型
 
-    binList = ['.idx']
-
     HandleObj = HandleFile(originDir, txtFileList, newDir, ignoreDir, addSuffix, binList)
 
     if optCopy:
-        print('......复制文件:')
+        if not os.path.exists(originDir):
+            print('......路径有问题:')
+            raise OSError
+        print('......开始复制文件:')
         HandleObj.copyFiles()
     else:
-        print('......还原文件:')
+        if not os.path.exists(newDir):
+            print('......路径有问题:')
+            raise OSError
+        print('......开始还原文件:')
         HandleObj.rnameSuffix()
 
     print('......The End......')
