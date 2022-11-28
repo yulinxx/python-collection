@@ -116,11 +116,11 @@ if __name__ == '__main__':
 
     optCopy = True
     # optCopy = False
-    originDir = r'E:\RD\xxxx'  # 源路径
+    originDir = r'E:\RD\GraphicsComponent_QtExample_1126'  # 源路径
 
-    newDir = r'E:\RD\xxxx1'  # 新路径 或 要还原的路径
+    newDir = r'E:\RD\Gxxxx'  # 新路径 或 要还原的路径
 
-    ignoreDir = ['.vs', '.vscode', '.ide', 'build', 'CMake-build']
+    ignoreDir = ['.vs', '.vscode', '.ide', 'build', 'CMake-build', 'x64']
     binList = ['.idx']  # 以二进制复制的文件后缀
 
     addSuffix = r'_xx'  # 添加后缀
