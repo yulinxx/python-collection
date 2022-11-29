@@ -1,6 +1,7 @@
 import os
 from shutil import copyfile
 
+
 class HandleFile:
     def __init__(self, origin_dir, txt_list, new_dir, ignore_dir, add_suffix, bin_list=[]):
         self.__originDir = origin_dir
@@ -21,13 +22,16 @@ class HandleFile:
         # 在这里,将老目录去掉strFind = {str} '\\'
         countIndex = 0
         parentPath = '@'
+        pathLen = len(self.__originDir)
+
         # 当前文件夹的路径 子目录列表  当前路径下的所有文件
         for rootDir, dirName, fileNames in os.walk(originDir):
             strFind = '\\'
-            nPos = rootDir.rfind(strFind)
+            rootDir = rootDir.replace('\\', '/')
+            nPos = rootDir.rfind('/')
             curDir = rootDir[nPos + len(strFind):]  # 当前文件夹路径中的最后的文件夹名称
             if curDir in self.__ignoreDir:  # 忽略的文件夹不复制
-                parentPath = rootDir    # 保存当前路径,防止子目录继续遍历
+                parentPath = rootDir  # 保存当前路径,防止子目录继续遍历
                 continue
 
             subPos = rootDir.find(parentPath)
@@ -37,9 +41,14 @@ class HandleFile:
             parentPath = '@'
 
             # 若目录不存在,则创建新的目录进行文件存储
-            mkDir = rootDir.replace(self.__originDir, self.__newDir)
+            # mkDir = rootDir.replace(self.__originDir, self.__newDir)
+            mkDir = self.__newDir + '/' + rootDir[pathLen:]
             if not os.path.exists(mkDir):
-                os.mkdir(mkDir)
+                try:
+                    os.mkdir(mkDir)
+                except:
+                    continue
+                    pass
 
             for strFileName in fileNames:  # 遍历当前文件夹下所有的文件
                 countIndex += 1
@@ -116,9 +125,9 @@ if __name__ == '__main__':
 
     optCopy = True
     # optCopy = False
-    originDir = r'E:\RD\GraphicsComponent_QtExample_1126'  # 源路径
+    originDir = r'C:/CAD/GraphicsComponent_QtExample/'  # 源路径
 
-    newDir = r'E:\RD\Gxxxx'  # 新路径 或 要还原的路径
+    newDir = r'E:/CAD'  # 新路径 或 要还原的路径
 
     ignoreDir = ['.vs', '.vscode', '.ide', 'build', 'CMake-build', 'x64']
     binList = ['.idx']  # 以二进制复制的文件后缀
