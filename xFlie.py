@@ -23,6 +23,7 @@ class HandleFile:
         countIndex = 0
         parentPath = '@'
         pathLen = len(self.__originDir)
+        errorList = []
 
         # 当前文件夹的路径 子目录列表  当前路径下的所有文件
         for rootDir, dirName, fileNames in os.walk(originDir):
@@ -69,6 +70,7 @@ class HandleFile:
                         newFile.close()
                     except:
                         print(f"\nxxxError {fileSuffix} -> {originFile} to {newFileName}\n")
+                        errorList.append(f"\nxxxError {fileSuffix} -> {originFile} to {newFileName}\n")
                     finally:
                         print(f"{fileSuffix} -- {originFile} ---> {newFileName}")
 
@@ -89,6 +91,8 @@ class HandleFile:
                     print(f"{fileSuffix} -- {newFileName} ---> {countIndex}")
 
         print('copyFile Process: ' + str(countIndex) + ' files')
+        for e in errorList:
+            print(e)
 
     def rnameSuffix(self):
 
@@ -123,11 +127,11 @@ if __name__ == '__main__':
     print('-------------------------')
     print('----------Begin----------')
 
-    optCopy = True
-    # optCopy = False
-    originDir = r'C:/CAD/GraphicsComponent_QtExample/'  # 源路径
+    # optCopy = True
+    optCopy = False
+    originDir = r'C:/CAD/xxx/'  # 源路径
 
-    newDir = r'E:/CAD'  # 新路径 或 要还原的路径
+    newDir = r'E:/RD/CAD20221230'  # 新路径 或 要还原的路径
 
     ignoreDir = ['.vs', '.vscode', '.ide', 'build', 'CMake-build', 'x64']
     binList = ['.idx']  # 以二进制复制的文件后缀
