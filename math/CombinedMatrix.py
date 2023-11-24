@@ -41,6 +41,34 @@ def rotateMatrix(angle):
     return matrix
    
 ###########################################
+"""构建绕指定点旋转矩阵"""
+def rotatePtMatrix(angle, xPt, yPt):
+    matMoveA = moveMatrix(-xPt, -yPt)   # 移至中心
+    
+    print('\n\n ------------------ moveMatrix(-xPt, -yPt)   # 移至中心 ')
+    print(matMoveA)
+
+
+    matRotate = rotateMatrix(angle)        # 旋转
+    
+    print('\n\n ------------------ matRotate = rotateMatrix(angle)        # 旋转 ')
+    print(matRotate)
+
+    matMoveB = moveMatrix(xPt, yPt)     # 移至原位
+
+
+    print('\n\n ------------------ matMoveB = moveMatrix(xPt, yPt)     # 移至原位 ')
+    print(matMoveB)
+
+    mat = matMoveB.dot(matRotate).dot(matMoveA)
+
+    print('\n\n ------------------ mat = matMoveB.dot(matRotate).dot(matMoveA) ')
+    print(mat)
+
+    return mat
+    #return matMoveA.dot(matRotate).dot(matMoveB)
+
+###########################################
 """构建平移矩阵"""
 def moveMatrix(xMov, yMov):
     matrix = np.array([
@@ -81,7 +109,7 @@ def ptDotMatrix(m, ptsX, ptsY):
         ptX.append(ptRes[0][0])
         ptY.append(ptRes[1][0])
     
-    return (ptX, ptY)
+    return ptX, ptY
 
 ###########################################
 matMoveA = moveMatrix(-50, -30)   # 移至中心
@@ -93,7 +121,9 @@ matMoveB = moveMatrix(50, 30)     # 移至原位
 matX = matMoveB.dot(matRotate).dot(matMoveA)
 
 print('\n\n ------------------ moveMatrix(-50, -30) ')
-print(matMoveA)
+# print(matMoveA)
+print(np.array_str(matMoveA, suppress_small=True))
+
 
 print('\n\n ------------------ rotateMatrix(90) ')
 print(matRotate)
@@ -107,16 +137,16 @@ print(' ------------------ \n\n')
 
 
 
-movePts = ptDotMatrix(matMoveA, ptXArray, ptYArray)
-rotatePts = ptDotMatrix(matRotate, movePts[0], movePts[1])
-movePtsB = ptDotMatrix(matMoveB, rotatePts[0], rotatePts[1])
+moveXPtsa, moveYPtsa = ptDotMatrix(matMoveA, ptXArray, ptYArray)
+rotateXPts, rotateYPts = ptDotMatrix(matRotate, moveXPts, moveYPts)
+moveXPtsb, moveYPtsb = ptDotMatrix(matMoveB, rotateXPts, rotateYPts)
 # ptsX = ptDotMatrix(matX, movePtsB[0], movePtsB[1])
 
-ptsX = ptDotMatrix(matX, ptXArray, ptYArray)
+ptsX, ptsY = ptDotMatrix(matX, ptXArray, ptYArray)
 
 ######################################################
-def drawData(data, c='blue'):
-    plt.plot(data[0], data[1], label='rotate', linewidth=1, color=c,
+def drawData(xPts, yPts, c='blue'):
+    plt.plot(xPts, yPts, label='rotate', linewidth=1, color=c,
             marker='o', markerfacecolor='blue', markersize=4)
 
 
@@ -128,9 +158,9 @@ ax.set_aspect(1)
 plt.plot(ptXArray, ptYArray, label='origin', linewidth=5, color='green',
          marker='o', markerfacecolor='green', markersize=4)
 
-# drawData(movePts, 'blue')
-# drawData(rotatePts, 'black')
-# drawData(movePtsB, 'red')
-drawData(ptsX, 'green')
+# drawData(moveXPtsa, moveYPtsa, 'blue')
+# drawData(rotateXPts, rotateYPts, 'black')
+# drawData(moveXPtsb, moveYPtsb, 'red')
+drawData(ptsX, ptsY, 'green')
 
 plt.show()
