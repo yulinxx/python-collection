@@ -26,12 +26,16 @@ class AntColonyTSP:
 
         # 初始化信息素矩阵,所有城市之间的信息素初始值都为1
         self.m_pheromone_table = np.ones((self.m_num_city, self.m_num_city))
-        self.m_patht_able = np.zeros((self.m_num_ant, self.m_num_city)).astype(int)
+        # 蚂蚁的路径，其中每一行代表一只蚂蚁的路径，每一列代表一个城市。
+        self.m_path_table = np.zeros((self.m_num_ant, self.m_num_city)).astype(int)
 
         # 统计信息
         self.m_length_aver = np.zeros(iter_max)     # 各代路径的平均长度
         self.m_length_best = np.zeros(iter_max)     # 各代及其之前遇到的最佳路径长度
         self.m_path_best = np.zeros((iter_max, self.m_num_city))
+
+        # 设置打印选项，显示小数点后三位
+        np.set_printoptions(precision=3, suppress=True)
 
     def get_distmat(self):
         """
@@ -48,6 +52,11 @@ class AntColonyTSP:
             for j in range(i, num):
                 # np.linalg.norm 用于计算城市之间的欧几里德距离
                 dist_mat[i][j] = dist_mat[j][i] = np.linalg.norm(self.m_coordinates[i] - self.m_coordinates[j])
+
+        print("Distance Matrix:")
+        for row in dist_mat:
+            print(row)
+
         return dist_mat
 
     def run(self):
@@ -66,61 +75,112 @@ class AntColonyTSP:
 
     def generate_ant_paths(self, iter):
         '''随机产生各个蚂蚁的起点城市'''
-        if self.m_num_ant <= self.m_num_city:   # 城市数比蚂蚁数多
-            # 随机产生各个蚂蚁的起点城市
-            self.m_patht_able[:, 0] = np.random.permutation(range(0, self.m_num_city))[:self.m_num_ant]
-        else:   # 蚂蚁数比城市数多，需要补足
-            self.m_patht_able[:self.m_num_city, 0] = np.random.permutation(range(0, self.m_num_city))[:]
-            self.m_patht_able[self.m_num_city:, 0] = np.random.permutation(range(0, self.m_num_city))[
-                :self.m_num_ant - self.m_num_city]    
+        citys = range(0, self.m_num_city)       # 创建一个包含 0 到 self.m_num_city - 1 的整数的序列
+        citys = np.random.permutation(citys)    # 随机打乱
+
+        if self.m_num_ant <= self.m_num_city:   # 蚂蚁数 小于 城市数
+            # 取citys前 self.m_num_ant 个元素(城市)，每个蚂蚁有不同的起始点
+            self.m_path_table[:, 0] = citys[:self.m_num_ant]
+        else:   # 蚂蚁数 大于 城市数多，需要补足
+            # 对于蚂蚁数量大于城市数量的情况，先将 self.m_path_table 的前 self.m_num_city 行的第一个元素设为 citys 的随机排列。
+            # 然后，将多余的蚂蚁的起始城市随机选择自 citys 的剩余未被选中的城市中。
+            # [:self.m_num_ant - self.m_num_city] 取剩余未被选中的城市的个数。
+
+            # [:self.m_num_city, 0]: 这是切片操作的语法，包含两部分：
+            # [:self.m_num_city]: 表示选择数组的前 self.m_num_city 行。这是第一个维度的切片。
+            # [:, 0]: 表示选择每一行的第一个元素，即第一列。这是第二个维度的切片。
+            # 即将此表的第一行设置为城市路径
+            self.m_path_table[:self.m_num_city, 0] = citys[:]
+
+            # 剩余的蚂蚁从城市列表中选择
+            self.m_path_table[self.m_num_city:, 0] = citys[:self.m_num_ant - self.m_num_city]
 
     def update_statistics(self, iter):
-        '''做出平均路径长度和最优路径长度'''
-        length = np.zeros(self.m_num_ant)   # 计算各个蚂蚁的路径距离
+        '''计算各个蚂蚁的路径长度。更新平均路径长度、最优路径长度以及最优路径。 statistics/统计学'''
+        length = np.zeros(self.m_num_ant)   # 保存每只蚂蚁的路径长度
 
-         # 启发函数矩阵，表示蚂蚁从城市i转移到矩阵j的期望程度
-        etatable = 1.0 / (self.m_dist_mat + np.diag([1e10] * self.m_num_city))
+        # 启发函数矩阵，表示蚂蚁从城市i转移到矩阵j的期望程度
+        # np.diag(v, k=0)，用于创建一个对角矩阵或从对角线元素中提取对角线。
+        # 参数 v 是一个一维数组，表示对角线元素。
 
-        for i in range(self.m_num_ant):
-            visiting = self.m_patht_able[i, 0]      # 当前所在的城市
-            unvisited = set(range(self.m_num_city)) # 未访问的城市,以集合的形式存储{}
-            unvisited.remove(visiting)              # 删除元素；利用集合的remove方法删除存储的数据内容
 
-            for j in range(1, self.m_num_city):  # 循环num_city-1次，访问剩余的num_city-1个城市
+        print(np.diag([1e10] * self.m_num_city))
+
+        # 在Python中，np.diag([1e10] * 52) 是NumPy库的用法，用于创建一个对角矩阵。解释如下：
+        # 1e10：这是一个科学记数法表示的数字，10,000,000,000。
+        # [1e10] * 52：这是一个Python列表操作，它将创建一个包含52个元素的列表，每个元素都是 1e10。
+        # np.diag(...)：这是NumPy库的一个函数，用于从给定的对角线元素创建一个对角矩阵。
+        # 所以，当你传入一个由52个 1e10 元素组成的列表时，它会返回一个52x52的对角矩阵，其中对角线上的每个元素都是 1e10，而矩阵的其他部分都是零。
+        # 即np.diag([1e10] * 52) 会生成一个52x52的对角矩阵，其对角线上的值为10,000,000,000，其余部分的值都是0。
+        # 对角线上的距离，即同一个城市，用一个很大的值表示
+
+        diag_matrix = np.diag([1e10] * self.m_num_city) # 创建对角矩阵 52 * 52,对角线上的数据为10的10次方,表示这些城市之间的距离非常远。
+
+        print("diag_matrix:")
+        for row in diag_matrix:
+            print(row)
+
+        # 计算城市间的启发函数矩阵，即城市间距离取倒数
+        inspiration_matrix = 1.0 / (self.m_dist_mat + diag_matrix)    # 两个输入矩阵中相同位置的元素相加，并将结果取倒数
+
+        print("inspiration_matrix:")
+        for row in inspiration_matrix:
+            print(row)
+
+        print("\n\nPheromone Table:")
+        for row in self.m_pheromone_table:
+            print(row)
+
+        for i in range(self.m_num_ant):             # 计算每个蚂蚁的路径
+
+            visiting = self.m_path_table[i, 0]      # 当前所在的城市(起始城市)
+            unvisited = set(range(self.m_num_city)) # 所有城市列表
+            unvisited.remove(visiting)              # 删除所在的起始城市，剩余的即为未访问的城市
+
+            for j in range(1, self.m_num_city):     # 访问剩余的城市
                 # 轮盘法选择下一个要访问的城市
-                listunvisited = list(unvisited)
-                probtrans = np.zeros(len(listunvisited))
+                list_unvisited = list(unvisited)    # 数据类型转换
 
-                for k in range(len(listunvisited)):
-                    probtrans[k] = np.power(self.m_pheromone_table[visiting][listunvisited[k]], self.m_alpha) \
-                        * np.power(etatable[visiting][listunvisited[k]], self.m_beta)
+                trans_probabilities  = np.zeros(len(list_unvisited))   # 创建一个长度为 len(list_unvisited) 的全零数组，在后续循环中填充每个未访问城市的概率转移值
 
-                cumsumprobtrans = (probtrans / sum(probtrans)).cumsum()
-                cumsumprobtrans -= np.random.rand()
-                k = listunvisited[(np.where(cumsumprobtrans > 0)[0])[0]]
+                for k in range(len(list_unvisited)): # 对于每个未访问城市，计算概率转移值
+                    # 计算概率转移值，其中包括信息素浓度和启发函数的影响。
+                    p = self.m_pheromone_table[visiting][list_unvisited[k]]
+                    e = inspiration_matrix[visiting][list_unvisited[k]]
+                    a = np.power(p, self.m_alpha)
+                    b = np.power(e, self.m_beta)
+
+                    trans_probabilities [k] =  a * b    # 计算信息素和启发函数的乘积得到的概率转移值。
+
+                # 计算概率转移值的累积和，以便后续用于轮盘赌选择。 每个概率转移值除以总和，得到相对概率。这确保了所有概率值的总和为1，使其成为概率分布。
+                cumulative_sum_probabilities = (trans_probabilities  / sum(trans_probabilities )).cumsum()     # cumsum() 这是计算数组元素的累积和。
+
+                cumulative_sum_probabilities -= np.random.rand()                         # 为了进行轮盘赌选择，从随机值中减去一个随机数。
+                k = list_unvisited[(np.where(cumulative_sum_probabilities > 0)[0])[0]]   # 通过轮盘法选择下一个要访问的城市。
 
                  # 元素的提取（也就是下一轮选的城市）
-                self.m_patht_able[i, j] = k     # 添加到路径表中（也就是蚂蚁走过的路径)
-                unvisited.remove(k)             # 然后在为访问城市set中remove（）删除掉该城市
-                length[i] += self.m_dist_mat[visiting][k]
-                visiting = k
+                self.m_path_table[i, j] = k     # 添加到路径表中（也就是蚂蚁走过的路径)
+                unvisited.remove(k)             # 然后在为访问城市set中remove（）删除掉该城市，从未访问城市的集合中移除已经访问的城市。
+                length[i] += self.m_dist_mat[visiting][k]   # 更新路径长度，将蚂蚁从当前城市移动到新城市的距离添加到路径长度中。
+                visiting = k        # 更新当前所在的城市，以便下一步计算。
 
             # 蚂蚁的路径距离包括最后一个城市和第一个城市的距离
-            length[i] += self.m_dist_mat[visiting][self.m_patht_able[i, 0]]
+            length[i] += self.m_dist_mat[visiting][self.m_path_table[i, 0]]
 
         # 记录每次迭代的平均路径长度、最佳路径长度以及最佳路径。
+        # mean(): 是 NumPy 数组的方法，用于计算数组中所有元素的平均值。
         self.m_length_aver[iter] = length.mean()
 
         if iter == 0:
             self.m_length_best[iter] = length.min()
-            self.m_path_best[iter] = self.m_patht_able[length.argmin()].copy()
+            self.m_path_best[iter] = self.m_path_table[length.argmin()].copy()
         else:
             if length.min() > self.m_length_best[iter - 1]:
                 self.m_length_best[iter] = self.m_length_best[iter - 1]
                 self.m_path_best[iter] = self.m_path_best[iter - 1].copy()
             else:
                 self.m_length_best[iter] = length.min()
-                self.m_path_best[iter] = self.m_patht_able[length.argmin()].copy()
+                self.m_path_best[iter] = self.m_path_table[length.argmin()].copy()
 
     def update_pheromones(self):
         '''更新信息素,为每只蚂蚁在路径上留下的信息素增量'''
@@ -128,17 +188,17 @@ class AntColonyTSP:
 
         for i in range(self.m_num_ant):
             for j in range(self.m_num_city - 1):    # 计算信息素增量
-                changepheromonetable[self.m_patht_able[i, j]][self.m_patht_able[i, j + 1]] += \
-                    self.m_Q / self.m_dist_mat[self.m_patht_able[i, j]][self.m_patht_able[i, j + 1]]
+                changepheromonetable[self.m_path_table[i, j]][self.m_path_table[i, j + 1]] += \
+                    self.m_Q / self.m_dist_mat[self.m_path_table[i, j]][self.m_path_table[i, j + 1]]
 
-            changepheromonetable[self.m_patht_able[i, j + 1]][self.m_patht_able[i, 0]] += \
-                self.m_Q / self.m_dist_mat[self.m_patht_able[i, j + 1]][self.m_patht_able[i, 0]]
+            changepheromonetable[self.m_path_table[i, j + 1]][self.m_path_table[i, 0]] += \
+                self.m_Q / self.m_dist_mat[self.m_path_table[i, j + 1]][self.m_path_table[i, 0]]
 
         # 计算信息素公式
         self.m_pheromone_table = (1 - self.m_rho) * self.m_pheromone_table + changepheromonetable
 
     def plot_results(self):
-        # 做出平均路径长度和最优路径长度
+        '''绘制平均路径长度和最优路径长度的图表。绘制找到的最优路径图。'''
         fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(12, 10))
         axes[0].plot(self.m_length_aver, 'k', marker=u'')
         axes[0].set_title('Average Length')
