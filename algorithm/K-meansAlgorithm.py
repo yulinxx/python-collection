@@ -75,7 +75,7 @@ def calcDis(dataSet, centroids, k):
         squaredDist = np.sum(squaredDiff, axis=1)
         distance = squaredDist ** 0.5
         clalist.append(distance)
-        
+
     clalist = np.array(clalist)
     return clalist
 
@@ -117,13 +117,13 @@ if __name__ == '__main__':
     n_features = 2
     n_clusters = 5 
 
-    data_set = create_data_set(n_samples, n_features, n_clusters)
-    print(data_set)
-    centroids, cluster = kmeans(data_set, n_clusters)
+    # date = create_data_set(n_samples, n_features, n_clusters)
+    # print(date)
+    centroids, cluster = kmeans(date, n_clusters)
 
     # 绘制原始数据和聚类结果
-    for i in range(len(data_set)):
-        plt.scatter(data_set[i][0], data_set[i][1], marker='o', color='green', s=40, label='原始点')
+    for i in range(len(date)):
+        plt.scatter(date[i][0], date[i][1], marker='o', color='green', s=40, label='原始点')
 
     for j in range(len(centroids)):
         plt.scatter(centroids[j][0], centroids[j][1], marker='x', color='red', s=50, label='质心')
